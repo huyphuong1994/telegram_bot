@@ -19,7 +19,8 @@ class CreateConfigTelegramsTable extends Migration
             $table->string('chat_id_a', 50)->nullable();
             $table->string('token_b', 100)->nullable();
             $table->string('chat_id_b', 50)->nullable();
-            $table->text('admins')->nullable();
+            $table->text('admins_a')->nullable();
+            $table->text('admins_b')->nullable();
             $table->text('topic')->nullable();
             $table->timestamps();
         });
