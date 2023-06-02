@@ -26,6 +26,10 @@
         <div class="centered">
             <form id="from">
                 <h1>Cài Đặt Thông Tin</h1>
+
+                <div>
+                    <h2>Thông tin group A</h2>
+                </div>
                 <div class="item">
                     <label>Token Bot A</label>
                     <label for="token_bot_a"></label><input type="text" id="token_bot_a">
@@ -35,13 +39,16 @@
                     <label for="id_group_a"></label><input type="text" id="id_group_a">
                 </div>
 
+                <div>
+                    <h2>Thông tin group B</h2>
+                </div>
                 <div class="item">
                     <label>Token Bot B</label>
                     <label for="token_bot_b"></label><input type="text" id="token_bot_b">
                 </div>
                 <div id="topic">
                     <div class="item">
-                        <label>Id Topic 1</label>
+                        <label>Id Group B</label>
                         <label for="id_topic_1"></label><input type="text" id="id_topic_1">
                     </div>
                 </div>

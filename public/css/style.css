@@ -45,7 +45,11 @@ main .centered .item input {
 }
 
 main .centered button {
+    background: cornflowerblue;
+    color: #fff;
     margin-top: 15px;
-    padding: 8px;
+    padding: 16px;
     cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.164);
 }
