@@ -22,3 +22,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [\App\Http\Controllers\WebhookTelegram::class, 'configTelegram']);
 Route::post('/create-config', [\App\Http\Controllers\WebhookTelegram::class, 'createConfig']);
 Route::post('webhook-test', [\App\Http\Controllers\WebhookTelegram::class, 'getWebhook']);
+Route::post('getadmin', [\App\Http\Controllers\WebhookTelegram::class, 'getUserAdmin']);

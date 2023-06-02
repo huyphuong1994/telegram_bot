@@ -34,10 +34,10 @@
                     <label>Token Bot A</label>
                     <label for="token_bot_a"></label><input type="text" id="token_bot_a">
                 </div>
-                <div class="item">
-                    <label>Id Group A</label>
-                    <label for="id_group_a"></label><input type="text" id="id_group_a">
-                </div>
+{{--                <div class="item">--}}
+{{--                    <label>Id Group A</label>--}}
+{{--                    <label for="id_group_a"></label><input type="text" id="id_group_a">--}}
+{{--                </div>--}}
 
                 <div>
                     <h2>Thông tin group B</h2>
@@ -46,12 +46,12 @@
                     <label>Token Bot B</label>
                     <label for="token_bot_b"></label><input type="text" id="token_bot_b">
                 </div>
-                <div id="topic">
-                    <div class="item">
-                        <label>Id Group B</label>
-                        <label for="id_topic_1"></label><input type="text" id="id_topic_1">
-                    </div>
-                </div>
+{{--                <div id="topic">--}}
+{{--                    <div class="item">--}}
+{{--                        <label>Id Group B</label>--}}
+{{--                        <label for="id_topic_1"></label><input type="text" id="id_topic_1">--}}
+{{--                    </div>--}}
+{{--                </div>--}}
 
                 <button type="submit">
                     Bắt Đầu

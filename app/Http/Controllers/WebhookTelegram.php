@@ -24,19 +24,21 @@ class WebhookTelegram extends Controller
 
             $configTele = ConfigTelegram::orderBy('id', 'DESC')->first();
             $listTopic = json_decode($configTele['topic']);
+            $listAdminB = json_decode($configTele['admins_b']);
+
+            if (!empty($mes['message']['text'])) {
+                if ($mes['message']['text'] == '/admin') {
+                    $this->getUserAdmin($configTele['id'], $configTele['token_a'], $mes['message']['chat']['id']);
+                    $this->getUserAdmin($configTele['id'], $configTele['token_b'], $mes['message']['chat']['id']);
+                }
+            }
 
             if (!empty($mes['message']) && !empty($mes['message']['chat']['id'])) {
                 if ($mes['message']['chat']['id'] == $configTele['chat_id_a'] && !empty($mes['message']['text'])) {
                     foreach ($listTopic as $topic) {
                         $this->sendMesToTopic($configTele['token_b'], $configTele['chat_id_b'], $mes['message']['text'], $topic->message_thread_id);
                     }
-
-                    if ($mes['message']['text'] == '/admin') {
-                        $this->getUserAdmin($configTele['id'], $configTele['token_b'], $configTele['chat_id_a']);
-                    }
                 }
-
-                Storage::disk('local')->put('message.txt', json_encode($mes));
 
                 if ($mes['message']['chat']['id'] == $configTele['chat_id_b'] && !empty($mes['message']['text'])) {
                     if ($mes['message']['text'] == '/subscribe') {
@@ -47,24 +49,26 @@ class WebhookTelegram extends Controller
                                 "status_message" => true
                             ];
 
-                            $text = $this->subscribe($configTele['id'], $listTopic, $newTopic);
+                            $this->subscribe($configTele['id'], $listTopic, $newTopic);
                         }
                     }
 
                     if ($mes['message']['text'] == '/unsubscribe') {
                         if (!empty($mes['message']['reply_to_message']['forum_topic_created']['name'])) {
-                            $text = $this->unsubscribe($configTele['id'], $listTopic, $mes['message']['message_thread_id']);
+                            $this->unsubscribe($configTele['id'], $listTopic, $mes['message']['message_thread_id']);
                         }
                     }
 
                     if ($mes['message']['text'] == '/banChat') {
                         if (!empty($mes['message']['reply_to_message']['forum_topic_created']['name'])) {
-                            $text = $this->banChatConfig($configTele['id'], $listTopic, false, $mes['message']['message_thread_id']);
+                            $this->banChatConfig($configTele['id'], $listTopic, false, $mes['message']['message_thread_id']);
                         }
                     }
 
-                    if ($mes['message']['text'] == '/admin') {
-//                        $this->getUserAdmin($configTele['id'], $configTele['token_b'], $configTele['chat_id_b']);
+                    foreach ($listTopic as $topic) {
+                        if ($topic->message_thread_id == $mes['message']['message_thread_id'] && !$topic->status_message && !in_array($mes['message']['from']['id'], $listAdminB)) {
+                            $this->deleteMessage($configTele['token_b'], $configTele['chat_id_b'], $mes['message']['message_id']);
+                        }
                     }
                 }
             }
@@ -78,6 +82,24 @@ class WebhookTelegram extends Controller
     public function deleteMessage($token, $chatId, $messageId)
     {
         $urlApi = 'https://api.telegram.org/bot' . $token . '/deleteMessage?chat_id=' . $chatId . '&message_id=' . $messageId;
+
+        $headers = [
+
+        ];
+
+        Storage::disk('local')->put('admins.txt', ($urlApi));
+
+        $ressponse = Http::withHeaders($headers)->get($urlApi);
+        $statusCode = $ressponse->status();
+
+        if ($statusCode == 200) {
+            $responseBody = json_decode($ressponse->getBody(), true);
+            $data = $responseBody;
+
+            return $data;
+        }
+
+        return false;
     }
 
     public function banChatConfig($id, $listTopic, $mute, $message_thread_id)
@@ -134,32 +156,59 @@ class WebhookTelegram extends Controller
         }
     }
 
+//    public function getUserAdmin(Request $request)
     public function getUserAdmin($id, $token, $chatId)
     {
-        $urlApi = 'https://api.telegram.org/bot' . $token . '/getChatAdministrators?chat_id=' . $chatId;
+        try {
+//            $id = $request->id;
+//            $token = $request->token;
+//            $chatId = $request->chatId;
 
-        $headers = [
+            $urlApi = 'https://api.telegram.org/bot' . $token . '/getChatAdministrators?chat_id=' . $chatId;
 
-        ];
+            $headers = [
 
-        $ressponse = Http::withHeaders($headers)->get($apiDK);
-        $statusCode = $ressponse->status();
+            ];
 
-        if ($statusCode == 200) {
-            $responseBody = json_decode($ressponse->getBody(), true);
-            $data = $responseBody;
-            Storage::disk('local')->put('admins.txt', json_encode($data));
+            Storage::disk('local')->put('admins.txt', ($urlApi));
+
+            $ressponse = Http::withHeaders($headers)->get($urlApi);
+            $statusCode = $ressponse->status();
+
+            if ($statusCode == 200) {
+                $responseBody = json_decode($ressponse->getBody(), true);
+                $data = $responseBody;
+
+                $listAdminId = array_map(function ($item) {
+                    return $item['user']['id'];
+                }, $data['result']);
+
+
+                $configTele = ConfigTelegram::find($id);
+                if ($token == $configTele['token_a']) {
+                    $configTele->fill(
+                        [
+                            "admins_a" => json_encode($listAdminId),
+                            "chat_id_a" => $chatId
+                        ]
+                    );
+                } else {
+                    $configTele->fill(
+                        [
+                            "admins_b" => json_encode($listAdminId),
+                            "chat_id_b" => $chatId
+                        ]
+                    );
+                }
+
+                $configTele->save();
+
+                return true;
+            }
+            return false;
+        } catch (\Exception $exception) {
+            return $exception->getMessage();
         }
-
-//        try {
-//            $configTele = ConfigTelegram::find($id);
-//            $configTele->fill(["topic" => json_encode($listTopic)]);
-//            $configTele->save();
-//
-//            return true;
-//        } catch (\Exception $exception) {
-//            return $exception->getMessage();
-//        }
     }
 
     public function createConfig(Request $request)
@@ -202,7 +251,11 @@ class WebhookTelegram extends Controller
         if ($statusCode == 200) {
             $responseBody = json_decode($ressponse->getBody(), true);
             $data = $responseBody;
+
+            return $data;
         }
+
+        return false;
     }
 
     public function sendMesToTopic($token, $chatID, $text, $message_thread_id = "")
