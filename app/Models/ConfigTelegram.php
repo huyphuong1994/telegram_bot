@@ -19,7 +19,6 @@ class ConfigTelegram extends Model
         'chat_id_a',
         'token_b',
         'chat_id_b',
-        'admins_a',
         'admins_b',
         'topic',
     ];
