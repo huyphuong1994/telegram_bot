@@ -62,7 +62,7 @@ class WebhookTelegram extends Controller
                 }
 
                 if ($mes['message']['chat']['id'] == $configTele['chat_id_b'] && !empty($mes['message']['text'])) {
-                    if ($mes['message']['text'] == '/theoDoi') {
+                    if ($mes['message']['text'] == '/theoDoi' && in_array($mes['message']['from']['id'], $listAdminB)) {
                         if (!empty($mes['message']['reply_to_message']['forum_topic_created']['name'])) {
                             $newTopic = [
                                 "title" => $mes['message']['reply_to_message']['forum_topic_created']['name'],
@@ -75,19 +75,19 @@ class WebhookTelegram extends Controller
                     }
 
                     if (!empty($listTopic)) {
-                        if ($mes['message']['text'] == '/boThoeDoi') {
+                        if ($mes['message']['text'] == '/boThoeDoi' && in_array($mes['message']['from']['id'], $listAdminB)) {
                             if (!empty($mes['message']['reply_to_message']['forum_topic_created']['name'])) {
                                 $this->unsubscribe($configTele['id'], $listTopic, $mes['message']['message_thread_id']);
                             }
                         }
 
-                        if ($mes['message']['text'] == '/khoa') {
+                        if ($mes['message']['text'] == '/khoa' && in_array($mes['message']['from']['id'], $listAdminB)) {
                             if (!empty($mes['message']['reply_to_message']['forum_topic_created']['name'])) {
                                 $this->banChatConfig($configTele['id'], $listTopic, false, $mes['message']['message_thread_id']);
                             }
                         }
 
-                        if ($mes['message']['text'] == '/boKhoa') {
+                        if ($mes['message']['text'] == '/boKhoa' && in_array($mes['message']['from']['id'], $listAdminB)) {
                             if (!empty($mes['message']['reply_to_message']['forum_topic_created']['name'])) {
                                 $this->banChatConfig($configTele['id'], $listTopic, true, $mes['message']['message_thread_id']);
                             }
