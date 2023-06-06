@@ -19,6 +19,17 @@ class WebhookTelegram extends Controller
         return view('welcome', compact('listConfig'));
     }
 
+    public function destroy($id)
+    {
+        try {
+            ConfigTelegram::destroy($id);
+
+            return 'Xóa thành công';
+        } catch (\Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
+
     public function getWebhook(Request $request)
     {
         try {

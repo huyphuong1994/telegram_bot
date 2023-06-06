@@ -15,9 +15,11 @@ class CreateConfigTelegramsTable extends Migration
     {
         Schema::create('config_telegrams', function (Blueprint $table) {
             $table->id();
+            $table->string('name_group_a', 255)->nullable();
             $table->string('token_a', 100);
             $table->string('chat_id_a', 50)->nullable();
             $table->string('token_b', 100);
+            $table->string('name_group_b', 255)->nullable();
             $table->string('chat_id_b', 50)->nullable();
             $table->text('admins_b')->nullable();
             $table->text('topic')->nullable();
